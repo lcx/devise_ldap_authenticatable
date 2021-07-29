@@ -167,8 +167,11 @@ module Devise
         else
           # AD optimization - extension will recursively check sub-groups with one query
           # "(memberof:1.2.840.113556.1.4.1941:=group_name)"
+          # override this setting with the group_attribute in the required_groups and define what you need
+          # memberof:1.2.840.113556.1.4.1941 does not work for non AD or other ldap implementations
+          # for example - ["memberOf", "cn=groupname,cn=groups,dc=foo,dc=at"]
           search_result = group_checking_ldap.search(:base => dn,
-                            :filter => Net::LDAP::Filter.ex("memberof:1.2.840.113556.1.4.1941", group_name),
+                            :filter => Net::LDAP::Filter.ex(group_attribute, group_name),
                             :scope => Net::LDAP::SearchScope_BaseObject)
           # Will return  the user entry if belongs to group otherwise nothing
           if search_result.length == 1 && search_result[0].dn.eql?(dn)
